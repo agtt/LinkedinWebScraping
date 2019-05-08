@@ -1,9 +1,10 @@
 import csv
-import parameters
+import LinkedinParameters as parameters
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from time import sleep
 from parsel import Selector
+
 
 # function to ensure all key data fields have a value
 def validate_field(field):
@@ -15,14 +16,15 @@ def validate_field(field):
         field = 'No results'
     return field
 
+
 linkedin_urls = []
 # defining new  variable passing two parameters
-writer = csv.writer(open(parameters.file_name, 'wb'))
+writer = csv.writer(open(parameters.file_name, 'w'))
 
 # writerow() method to the write to the file object
 writer.writerow(['Name', 'Job Title', 'Company', 'College', 'Location', 'URL'])
 
-#Login Linkedin
+# Login Linkedin
 
 driver = webdriver.Chrome('/home/rastap/Downloads/chromedriver_74/chromedriver')
 driver.get('https://www.linkedin.com')
@@ -31,7 +33,6 @@ username = driver.find_element_by_class_name('login-email')
 username.send_keys(parameters.linkedin_username)
 sleep(0.5)
 
-
 password = driver.find_element_by_class_name('login-password')
 password.send_keys(parameters.linkedin_password)
 sleep(0.5)
@@ -39,7 +40,7 @@ sleep(0.5)
 log_in_button = driver.find_element_by_class_name('submit-button')
 log_in_button.click()
 
-#Google Search
+# Google Search
 driver = webdriver.Chrome('/home/rastap/Downloads/chromedriver_74/chromedriver')
 driver.get('https://www.google.com')
 sleep(3)
@@ -50,15 +51,18 @@ sleep(0.5)
 search_query.send_keys(Keys.RETURN)
 sleep(3)
 
+i = 0
 while True:
-    #Get Linkedin URLs
+    # Get Linkedin URLs
+    print("--> " + i)
+    i+=1
     get_linkedin_urls = driver.find_elements_by_tag_name('cite')
     get_linkedin_urls = driver.find_elements_by_class_name('iUh30')
     for url in get_linkedin_urls:
         linkedin_urls.append(url.text)
-    sleep(1)
+    sleep(3)
     next = driver.find_element_by_class_name('pn')
-    if(next == ""):
+    if (next == ""):
         break
     next.click()
 
@@ -91,13 +95,15 @@ for linkedin_url in linkedin_urls:
         job_title = job_title.strip()
 
     # xpath to extract the text from the class containing the company
-    company = sel.xpath('//*[starts-with(@class, "pv-top-card-v2-section__entity-name pv-top-card-v2-section__company-name")]/text()').extract_first()
+    company = sel.xpath(
+        '//*[starts-with(@class, "pv-top-card-v2-section__entity-name pv-top-card-v2-section__company-name")]/text()').extract_first()
 
     if company:
         company = company.strip()
 
     # xpath to extract the text from the class containing the college
-    college = sel.xpath('//*[starts-with(@class, "pv-top-card-v2-section__entity-name pv-top-card-v2-section__school-name")]/text()').extract_first()
+    college = sel.xpath(
+        '//*[starts-with(@class, "pv-top-card-v2-section__entity-name pv-top-card-v2-section__school-name")]/text()').extract_first()
 
     if college:
         college = college.strip()
