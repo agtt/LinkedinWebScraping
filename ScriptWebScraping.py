@@ -1,4 +1,5 @@
 import csv
+import os
 import LinkedinParameters as parameters
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -26,7 +27,7 @@ writer.writerow(['Name', 'Job Title', 'Company', 'College', 'Location', 'URL'])
 
 # Login Linkedin
 
-driver = webdriver.Chrome('/home/rastap/Downloads/chromedriver_74/chromedriver')
+driver = webdriver.Firefox(executable_path='/home/rastap/Downloads/firfeox_geckodriver/geckodriver')
 driver.get('https://www.linkedin.com')
 
 username = driver.find_element_by_class_name('login-email')
@@ -41,7 +42,12 @@ log_in_button = driver.find_element_by_class_name('submit-button')
 log_in_button.click()
 
 # Google Search
-driver = webdriver.Chrome('/home/rastap/Downloads/chromedriver_74/chromedriver')
+profile = webdriver.FirefoxProfile()
+profile.set_preference('browser.download.folderList', 2)
+profile.set_preference('browser.download.manager.showWhenStarting', False)
+profile.set_preference('browser.download.dir', os.getcwd())
+profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/csv/xls')
+driver = webdriver.Firefox(executable_path='/home/rastap/Downloads/firfeox_geckodriver/geckodriver')
 driver.get('https://www.google.com')
 sleep(3)
 
@@ -54,14 +60,14 @@ sleep(3)
 i = 0
 while True:
     # Get Linkedin URLs
-    print("--> " + i)
+    print("--> " + str(i))
     i+=1
     get_linkedin_urls = driver.find_elements_by_tag_name('cite')
     get_linkedin_urls = driver.find_elements_by_class_name('iUh30')
     for url in get_linkedin_urls:
         linkedin_urls.append(url.text)
     sleep(3)
-    next = driver.find_element_by_class_name('pn')
+    next = driver.find_element_by_id('pnnext')
     if (next == ""):
         break
     next.click()
